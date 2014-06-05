@@ -7,9 +7,10 @@ use warnings;
 
 # Modules.
 use Encode qw(decode_utf8);
+use Error::Pure qw(err);
 
 # Version.
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 
 # Edge callback.
 sub _edge_callback {
@@ -22,7 +23,19 @@ sub _edge_callback {
 sub _init {
 	my ($self, $param_hr) = @_;
 	$self->SUPER::_init();
+	if (exists $param_hr->{'edge_callback'}
+		&& defined $param_hr->{'edge_callback'}
+		&& ref $param_hr->{'edge_callback'} ne 'CODE') {
+
+		err "Parameter 'edge_callback' isn't reference to code.";
+	}
 	$self->{'edge_callback'} = $param_hr->{'edge_callback'};
+	if (exists $param_hr->{'vertex_callback'}
+		&& defined $param_hr->{'vertex_callback'}
+		&& ref $param_hr->{'vertex_callback'} ne 'CODE') {
+
+		err "Parameter 'vertex_callback' isn't reference to code.";
+	}
 	$self->{'vertex_callback'} = $param_hr->{'vertex_callback'};
 	return;
 }
@@ -47,9 +60,7 @@ sub _read_graph {
 				$vertex_label = $id;
 			}
 			$graph->add_vertex($id);
-			if (exists $self->{'vertex_callback'}
-				&& $self->{'vertex_callback'}) {
-
+			if ($self->{'vertex_callback'}) {
 				$self->{'vertex_callback'}->($self, $graph,
 					$id, $vertex_label);
 			} else {
@@ -61,9 +72,7 @@ sub _read_graph {
 		} else {
 			my ($id1, $id2, $edge_label) = split m/\s+/ms, $line, 3;
 			$graph->add_edge($id1, $id2);
-			if (exists $self->{'edge_callback'}
-				&& $self->{'edge_callback'}) {
-
+			if ($self->{'edge_callback'}) {
 				$self->{'edge_callback'}->($self, $graph, $id1,
 					$id2, $edge_label);
 			} else {
@@ -93,7 +102,7 @@ __END__
 
 =head1 NAME
 
-Graph::Reader::TGF - Perl class for reading a graph from unicode tree text format.
+Graph::Reader::TGF - Perl class for reading a graph from TGF format.
 
 =head1 SYNOPSIS
 
@@ -111,7 +120,7 @@ Graph::Reader::TGF - Perl class for reading a graph from unicode tree text forma
  This doesn't take any arguments.
  Returns Graph::Reader::TGF object.
 
-=item C<read_graph($unicode_tree_file)>
+=item C<read_graph($tgf_file)>
 
  Read a graph from the specified file.
  The argument can either be a filename, or a filehandle for a previously opened file.
@@ -122,12 +131,18 @@ Graph::Reader::TGF - Perl class for reading a graph from unicode tree text forma
 =head1 TGF FILE FORMAT
 
  TGF = Trivial Graph Format
- TGF file format is described on L<https://en.wikipedia.org/wiki/Trivial_Graph_Format|English Wikipedia - Trivial Graph Format>
+ TGF file format is described on L<English Wikipedia - Trivial Graph Format|https://en.wikipedia.org/wiki/Trivial_Graph_Format>
  Example:
  1 First node
  2 Second node
  #
  1 2 Edge between the two
+
+=head1 ERRORS
+
+ new():
+         Parameter 'edge_callback' isn't reference to code.
+         Parameter 'vertex_callback' isn't reference to code.
 
 =head1 EXAMPLE1
 
@@ -228,6 +243,7 @@ Graph::Reader::TGF - Perl class for reading a graph from unicode tree text forma
 =head1 DEPENDENCIES
 
 L<Encode>,
+L<Error::Pure>,
 L<Graph::Reader>.
 
 =head1 SEE ALSO
@@ -237,6 +253,7 @@ L<Graph::Reader::Dot>,
 L<Graph::Reader::HTK>,
 L<Graph::Reader::LoadClassHierarchy>,
 L<Graph::Reader::UnicodeTree>,
+L<Graph::Reader::TGF::CSV>,
 L<Graph::Reader::XML>.
 
 =head1 REPOSITORY
@@ -255,6 +272,6 @@ BSD license.
 
 =head1 VERSION
 
-0.01
+0.02
 
 =cut

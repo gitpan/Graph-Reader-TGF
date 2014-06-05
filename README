@@ -1,6 +1,5 @@
 NAME
-    Graph::Reader::TGF - Perl class for reading a graph from unicode tree
-    text format.
+    Graph::Reader::TGF - Perl class for reading a graph from TGF format.
 
 SYNOPSIS
      use Graph::Reader::TGF;
@@ -13,19 +12,24 @@ METHODS
              This doesn't take any arguments.
              Returns Graph::Reader::TGF object.
 
-    "read_graph($unicode_tree_file)"
+    "read_graph($tgf_file)"
              Read a graph from the specified file.
              The argument can either be a filename, or a filehandle for a previously opened file.
              Returns Graph object.
 
 TGF FILE FORMAT
      TGF = Trivial Graph Format
-     TGF file format is described on L<https://en.wikipedia.org/wiki/Trivial_Graph_Format|English Wikipedia - Trivial Graph Format>
+     TGF file format is described on L<English Wikipedia - Trivial Graph Format|https://en.wikipedia.org/wiki/Trivial_Graph_Format>
      Example:
      1 First node
      2 Second node
      #
      1 2 Edge between the two
+
+ERRORS
+     new():
+             Parameter 'edge_callback' isn't reference to code.
+             Parameter 'vertex_callback' isn't reference to code.
 
 EXAMPLE1
      # Pragmas.
@@ -122,12 +126,12 @@ EXAMPLE2
      # 1-10,1-2,1-3,1-5,1-6,3-4,6-7,6-8,6-9
 
 DEPENDENCIES
-    Encode, Graph::Reader.
+    Encode, Error::Pure, Graph::Reader.
 
 SEE ALSO
     Graph::Reader, Graph::Reader::Dot, Graph::Reader::HTK,
     Graph::Reader::LoadClassHierarchy, Graph::Reader::UnicodeTree,
-    Graph::Reader::XML.
+    Graph::Reader::TGF::CSV, Graph::Reader::XML.
 
 REPOSITORY
     <https://github.com/tupinek/Graph-Reader-TGF>
@@ -141,5 +145,5 @@ LICENSE AND COPYRIGHT
     BSD license.
 
 VERSION
-    0.01
+    0.02
 
